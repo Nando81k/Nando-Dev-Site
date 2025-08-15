@@ -209,6 +209,54 @@ const Algorithms = () => {
                 </div>
               </section>
             )}
+            {algorithm.explanation?.intuition && (
+              <section>
+                <h3 className="text-xl font-semibold flex items-center space-x-2 mb-3"><FiTarget className="text-pink-500" /><span>Intuition</span></h3>
+                <div className="p-4 bg-pink-50 dark:bg-pink-900/20 rounded-lg text-gray-700 dark:text-gray-300 text-sm leading-relaxed">{algorithm.explanation.intuition}</div>
+              </section>
+            )}
+            {algorithm.explanation?.dryRun && (
+              <section>
+                <h3 className="text-xl font-semibold flex items-center space-x-2 mb-3"><FiPlay className="text-orange-500" /><span>Dry Run</span></h3>
+                <ol className="space-y-2 text-sm list-decimal list-inside">{algorithm.explanation.dryRun.map((s,i)=>(<li key={i} className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded">{s}</li>))}</ol>
+              </section>
+            )}
+            {algorithm.explanation?.edgeCases && (
+              <section>
+                <h3 className="text-xl font-semibold flex items-center space-x-2 mb-3"><FiHelpCircle className="text-yellow-500" /><span>Edge Cases</span></h3>
+                <div className="flex flex-wrap gap-2">{algorithm.explanation.edgeCases.map((e,i)=>(<span key={i} className="px-2 py-1 bg-yellow-50 dark:bg-yellow-900/20 text-xs rounded border border-yellow-200 dark:border-yellow-700">{e}</span>))}</div>
+              </section>
+            )}
+            {algorithm.explanation?.variations && (
+              <section>
+                <h3 className="text-xl font-semibold flex items-center space-x-2 mb-3"><FiLayers className="text-indigo-500" /><span>Variations</span></h3>
+                <ul className="space-y-1 text-sm">{algorithm.explanation.variations.map((v,i)=>(<li key={i} className="flex items-start space-x-2"><FiArrowRight className="mt-0.5 text-indigo-500" /><span>{v}</span></li>))}</ul>
+              </section>
+            )}
+            {algorithm.explanation?.optimizationTips && (
+              <section>
+                <h3 className="text-xl font-semibold flex items-center space-x-2 mb-3"><FiTrendingUp className="text-green-500" /><span>Optimization Tips</span></h3>
+                <ul className="space-y-1 text-sm">{algorithm.explanation.optimizationTips.map((t,i)=>(<li key={i} className="flex items-start space-x-2"><FiCheckCircle className="mt-0.5 text-green-500" /><span>{t}</span></li>))}</ul>
+              </section>
+            )}
+            {algorithm.explanation?.practiceProblems && (
+              <section>
+                <h3 className="text-xl font-semibold flex items-center space-x-2 mb-3"><FiAward className="text-purple-500" /><span>Practice Problems</span></h3>
+                <div className="flex flex-wrap gap-2">{algorithm.explanation.practiceProblems.map((p,i)=>(<span key={i} className="px-2 py-1 bg-purple-50 dark:bg-purple-900/20 text-xs rounded">{p}</span>))}</div>
+              </section>
+            )}
+            {algorithm.explanation?.furtherReading && (
+              <section>
+                <h3 className="text-xl font-semibold flex items-center space-x-2 mb-3"><FiBookOpen className="text-blue-500" /><span>Further Reading</span></h3>
+                <ul className="space-y-1 text-sm">{algorithm.explanation.furtherReading.map((r,i)=>(<li key={i}><a href={r.url} target="_blank" rel="noopener" className="text-blue-600 dark:text-blue-400 hover:underline">{r.title}</a></li>))}</ul>
+              </section>
+            )}
+            {algorithm.explanation?.interviewTips && (
+              <section>
+                <h3 className="text-xl font-semibold flex items-center space-x-2 mb-3"><FiMessageSquare className="text-emerald-500" /><span>Interview Tips</span></h3>
+                <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{algorithm.explanation.interviewTips}</div>
+              </section>
+            )}
           </div>
         </motion.div>
       </motion.div>

@@ -31,7 +31,24 @@ export const algorithms = [
       commonMistakes: ['Missing early break optimization'],
       interviewQuestions: [
         { question: 'Implement bubble sort with early exit.', difficulty: 'Easy', approach: 'Track swaps per pass.', answer: 'Use swapped flag; best case O(n).'}
-      ]
+      ],
+      intuition: 'Imagine repeatedly walking a line of people and swapping any adjacent pair that is out of height order; each full pass places the tallest remaining person at the end.',
+      complexityBreakdown: { best: 'O(n)', average: 'O(n²)', worst: 'O(n²)', space: 'O(1)' },
+      dryRun: [
+        'Start: [5,3,2,4]',
+        'Pass1 swaps: [3,2,4,5]',
+        'Pass2 swaps: [2,3,4,5]',
+        'Pass3 early exit (no swaps)' 
+      ],
+      edgeCases: ['Empty array','Single element','Already sorted (best case)','Reverse sorted (worst case)','Many duplicates'],
+      whenNotToUse: ['Large datasets','Performance critical paths','Memory is ample and better algorithms available'],
+      variations: ['Cocktail Shaker Sort (both directions)','Optimized with last swap index'],
+      optimizationTips: ['Track last swap position to shorten next pass','Break early when no swap'],
+      practiceProblems: ['Sort nearly sorted list quickly','Detect if list already sorted using bubble mechanism'],
+      furtherReading: [
+        { title: 'Stability in Sorting', url: 'https://en.wikipedia.org/wiki/Sorting_algorithm#Stability' }
+      ],
+      interviewTips: 'Emphasize educational purpose, stability, and early-exit optimization; contrast with more efficient algorithms.'
     }
   },
   // --- Sorting ---
@@ -63,7 +80,17 @@ export const algorithms = [
       commonMistakes: ['Not handling equal elements -> performance issues', 'Using first element as pivot on sorted input'],
       interviewQuestions: [
         { question: 'How to avoid worst-case?', difficulty: 'Medium', approach: 'Random pivot / median-of-three.', answer: 'Introduce randomness or choose median-of-three to balance partitions.' }
-      ]
+      ],
+      intuition: 'Partition around a pivot so left side contains smaller values and right side larger; recursively repeat. Like organizing books by picking one as a reference point.',
+      complexityBreakdown: { best: 'O(n log n)', average: 'O(n log n)', worst: 'O(n²)', space: 'O(log n) stack' },
+      dryRun: ['Array [9,3,7,1,6] pivot=7 -> partition => [3,1,6 | 7 | 9]','Left recurse [3,1,6] pivot=1 => [1 | 3,6]','Continue partitioning until size 1'],
+      edgeCases: ['Already sorted with poor pivot choice','Many equal elements','All duplicates','Very small partitions'],
+      whenNotToUse: ['Need stable sort AND cannot afford extra memory (basic in-place not stable)','Adversarial input causing worst-case without randomization'],
+      variations: ['Lomuto vs Hoare partition','Median-of-three pivot','Randomized quick sort','Three-way partition (Dutch flag)'],
+      optimizationTips: ['Switch to insertion sort for small subarrays','Randomize pivot to avoid patterns','Tail call elimination on larger partition'],
+      practiceProblems: ['Implement three-way partition quicksort','Explain pivot strategy trade-offs'],
+      furtherReading: [{ title: 'Quicksort Partition Schemes', url: 'https://en.wikipedia.org/wiki/Quicksort' }],
+      interviewTips: 'Discuss average vs worst case, pivot selection, space (recursion depth), and when to prefer merge sort for stability.'
     }
   },
   {
@@ -110,7 +137,17 @@ export const algorithms = [
       whyThisComplexity: 'Each iteration halves range -> log2 n steps.',
       whenToUse: 'Sorted data or monotonic predicate.',
       commonMistakes: ['Overflow on (l+r)/2 in some languages'],
-      interviewQuestions: [{ question: 'Modify to find first occurrence.', difficulty: 'Medium', approach: 'Bias search to left boundary.', answer: 'When match found, move right pointer left to continue search.' }]
+      interviewQuestions: [{ question: 'Modify to find first occurrence.', difficulty: 'Medium', approach: 'Bias search to left boundary.', answer: 'When match found, move right pointer left to continue search.' }],
+      intuition: 'Repeatedly eliminate half the search space by comparing the middle element to the target—like guessing a number and being told higher or lower.',
+      complexityBreakdown: { best: 'O(1)', average: 'O(log n)', worst: 'O(log n)', space: 'O(1)' },
+      dryRun: ['Search 37 in [5,18,22,37,41,56] mid=22 -> higher','Range becomes right half','Mid=41 -> lower','Mid=37 -> found'],
+      edgeCases: ['Empty array','Single element','Target smaller than min','Target larger than max','Duplicates (need first/last)'],
+      whenNotToUse: ['Unsorted data','Data structure without random access (unless adapted)'],
+      variations: ['First occurrence','Last occurrence','Lower bound','Upper bound','Binary search on answer (parametric search)'],
+      optimizationTips: ['Use l + ((r - l) >> 1) to avoid overflow in some languages','Keep loop invariant clearly defined'],
+      practiceProblems: ['Find peak in mountain array','Search rotated sorted array','Square root via binary search'],
+      furtherReading: [{ title: 'Binary Search Variants', url: 'https://cp-algorithms.com/binary_search.html' }],
+      interviewTips: 'Clarify loop invariant, handle duplicates, and show off-by-one safety; describe reasoning at each mid selection.'
     }
   },
   // --- Graph Algorithms ---
@@ -157,7 +194,17 @@ export const algorithms = [
       whyThisComplexity: 'Each vertex and edge considered once.',
       whenToUse: 'Need shortest path in unweighted graph.',
       commonMistakes: ['Using stack by mistake causing depth traversal'],
-      interviewQuestions: [{ question: 'How to reconstruct shortest path?', difficulty: 'Medium', approach: 'Parent map.', answer: 'Store parent when enqueuing; backtrack from target.' }]
+      interviewQuestions: [{ question: 'How to reconstruct shortest path?', difficulty: 'Medium', approach: 'Parent map.', answer: 'Store parent when enqueuing; backtrack from target.' }],
+      intuition: 'Explore outward in concentric “rings” from the start before going deeper—like ripples in water.',
+      complexityBreakdown: { best: 'O(V+E)', average: 'O(V+E)', worst: 'O(V+E)', space: 'O(V)' },
+      dryRun: ['Start at A queue=[A]','Dequeue A enqueue neighbors B,C','Dequeue B enqueue its unseen neighbors','Continue until queue empty'],
+      edgeCases: ['Disconnected graph','Self loops','Parallel edges','Start not in graph'],
+      whenNotToUse: ['Weighted graphs needing shortest weighted path (use Dijkstra)','Need deep path early (consider DFS)'],
+      variations: ['Bidirectional BFS','Multi-source BFS','0-1 BFS (deque)'],
+      optimizationTips: ['Mark visited upon enqueue to avoid duplicates','Use array queue indices for speed'],
+      practiceProblems: ['Shortest path in unweighted maze','Number of islands (grid BFS)'],
+      furtherReading: [{ title: 'BFS Applications', url: 'https://en.wikipedia.org/wiki/Breadth-first_search' }],
+      interviewTips: 'Stress shortest-path property in unweighted graphs and memory trade-off vs DFS.'
     }
   },
   {
