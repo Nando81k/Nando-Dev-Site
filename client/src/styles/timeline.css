@@ -1,0 +1,205 @@
+/* Custom Timeline Styles - Clean and Simple */
+
+/* Main timeline line styling */
+.vertical-timeline::before {
+  background: linear-gradient(to bottom, #14b8a6, #0f766e) !important;
+  width: 4px !important;
+  box-shadow: 0 0 10px rgba(20, 184, 166, 0.3) !important;
+}
+
+/* Timeline element spacing */
+.vertical-timeline-element {
+  margin: 3rem 0 !important;
+}
+
+/* Content styling for better timeline appearance */
+.vertical-timeline-element-content {
+  position: relative !important;
+  margin-top: 1rem !important;
+}
+
+/* Override default timeline styles completely for mobile */
+@media (max-width: 1170px) {
+  /* Force single column layout on mobile */
+  .vertical-timeline::before {
+    left: 30px !important;
+    width: 3px !important;
+    background: linear-gradient(to bottom, #14b8a6, #0f766e) !important;
+  }
+  
+  .vertical-timeline-element {
+    margin: 2rem 0 !important;
+  }
+  
+  .vertical-timeline-element .vertical-timeline-element-content {
+    margin-left: 80px !important;
+    padding: 1.5rem !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+    position: relative !important;
+    width: auto !important;
+    float: none !important;
+  }
+  
+  /* Hide arrows completely on mobile */
+  .vertical-timeline-element .vertical-timeline-element-content-arrow {
+    display: none !important;
+  }
+  
+  /* Position icons on the left */
+  .vertical-timeline-element .vertical-timeline-element-icon {
+    left: 15px !important;
+    width: 50px !important;
+    height: 50px !important;
+    margin-left: 0 !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    top: 1rem !important;
+  }
+  
+  /* Position dates at top right of content */
+  .vertical-timeline-element .vertical-timeline-element-date {
+    position: absolute !important;
+    top: 1rem !important;
+    right: 1rem !important;
+    left: auto !important;
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: inherit !important;
+    font-size: inherit !important;
+    background: transparent !important;
+    text-align: right !important;
+  }
+  
+  /* Force all elements to left side */
+  .vertical-timeline-element:nth-child(odd) .vertical-timeline-element-content,
+  .vertical-timeline-element:nth-child(even) .vertical-timeline-element-content {
+    margin-left: 80px !important;
+    margin-right: 0 !important;
+  }
+  
+  .vertical-timeline-element:nth-child(odd) .vertical-timeline-element-content::before,
+  .vertical-timeline-element:nth-child(even) .vertical-timeline-element-content::before {
+    display: none !important;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .vertical-timeline::before {
+    left: 25px !important;
+    width: 2px !important;
+  }
+  
+  .vertical-timeline-element .vertical-timeline-element-content {
+    margin-left: 65px !important;
+    padding: 1rem !important;
+  }
+  
+  .vertical-timeline-element .vertical-timeline-element-icon {
+    left: 10px !important;
+    width: 40px !important;
+    height: 40px !important;
+    top: 1rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+/* Dark mode support */
+.dark .vertical-timeline::before {
+  background: linear-gradient(to bottom, #14b8a6, #0f766e) !important;
+  box-shadow: 0 0 15px rgba(20, 184, 166, 0.5) !important;
+}   top: 0.75rem !important;
+    right: 0.75rem !important;
+  }
+}
+
+/* Content spacing improvements */
+.vertical-timeline-element-title {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.vertical-timeline-element-subtitle {
+  margin-bottom: 1rem !important;
+}
+
+/* Dark mode support */
+.dark .vertical-timeline::before {
+  background: #14b8a6 !important;
+}
+
+.dark .vertical-timeline-element-content {
+  background: #1f2937 !important;
+  color: #f9fafb !important;
+  border-color: #374151 !important;
+}
+
+/* Timeline start/end element styling */
+.vertical-timeline-element:first-child,
+.vertical-timeline-element:last-child {
+  margin: 2rem 0 !important;
+}
+
+.vertical-timeline-element:first-child .vertical-timeline-element-icon,
+.vertical-timeline-element:last-child .vertical-timeline-element-icon {
+  animation: pulse 2s infinite !important;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Icon enhancements */
+.vertical-timeline-element-icon {
+  transition: transform 0.3s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+}
+
+.vertical-timeline-element-icon:hover {
+  transform: scale(1.05) !important;
+}
+
+/* Ensure icon content is perfectly centered */
+.vertical-timeline-element-icon svg {
+  display: block !important;
+  margin: auto !important;
+}
+
+/* Fix icon text alignment for desktop */
+@media (min-width: 1171px) {
+  .vertical-timeline-element-icon {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+  }
+  
+  .vertical-timeline-element-icon svg {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
+  }
+}
+
+/* Date badge styling */
+.vertical-timeline-element-date span {
+  display: inline-block !important;
+  transition: transform 0.2s ease !important;
+}
+
+.vertical-timeline-element-date span:hover {
+  transform: translateY(-1px) !important;
+}
