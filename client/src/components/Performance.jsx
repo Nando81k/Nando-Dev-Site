@@ -25,6 +25,7 @@ export const BlogPostPage = lazy(() => import('../pages/BlogPost'))
 export const ContactPage = lazy(() => import('../pages/Contact'))
 export const ResumePage = lazy(() => import('../pages/Resume'))
 export const SkillsPage = lazy(() => import('../pages/Skills'))
+export const AlgorithmsPage = lazy(() => import('../pages/Algorithms'))
 
 // HOC to wrap pages with Suspense
 export const withSuspense = (Component, loadingMessage) => {

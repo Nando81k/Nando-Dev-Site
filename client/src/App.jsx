@@ -18,7 +18,8 @@ import {
   BlogPostPage,
   ContactPage,
   ResumePage,
-  SkillsPage
+  SkillsPage,
+  AlgorithmsPage
 } from './components/Performance'
 
 // Hooks
@@ -34,7 +35,7 @@ const BlogPost = withSuspense(BlogPostPage, "Loading blog post...")
 const Contact = withSuspense(ContactPage, "Loading contact page...")
 const Resume = withSuspense(ResumePage, "Loading resume...")
 const Skills = withSuspense(SkillsPage, "Loading skills showcase...")
-const Algorithms = withSuspense(() => import('./pages/Algorithms'), "Loading algorithms...")
+const Algorithms = withSuspense(AlgorithmsPage, "Loading algorithms...")
 
 // Create a component that uses analytics inside Router context
 const AppContent = () => {
