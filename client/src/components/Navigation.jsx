@@ -13,7 +13,8 @@ import {
   FiZap,
   FiEdit3,
   FiMessageCircle,
-  FiFileText
+  FiFileText,
+  FiCpu
 } from 'react-icons/fi'
 import { useTheme } from '../context/ThemeContext'
 import { useDeviceDetection } from '../hooks/useResponsive'
@@ -32,6 +33,7 @@ const Navigation = () => {
     { name: 'About', path: '/about', icon: FiUser },
     { name: 'Projects', path: '/projects', icon: FiFolder },
     { name: 'Skills', path: '/skills', icon: FiZap },
+    { name: 'Algorithms', path: '/algorithms', icon: FiCpu },
     { name: 'Blog', path: '/blog', icon: FiEdit3 },
     { name: 'Contact', path: '/contact', icon: FiMessageCircle },
   ]
@@ -297,6 +299,7 @@ const Navigation = () => {
                              item.path === '/about' ? 'Learn about me' :
                              item.path === '/projects' ? 'View my work' :
                              item.path === '/skills' ? 'Interactive demos' :
+                             item.path === '/algorithms' ? 'Algo & DS library' :
                              item.path === '/blog' ? 'Read my thoughts' :
                              item.path === '/contact' ? 'Get in touch' : ''}
                           </div>

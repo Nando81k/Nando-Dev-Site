@@ -34,6 +34,7 @@ const BlogPost = withSuspense(BlogPostPage, "Loading blog post...")
 const Contact = withSuspense(ContactPage, "Loading contact page...")
 const Resume = withSuspense(ResumePage, "Loading resume...")
 const Skills = withSuspense(SkillsPage, "Loading skills showcase...")
+const Algorithms = withSuspense(() => import('./pages/Algorithms'), "Loading algorithms...")
 
 // Create a component that uses analytics inside Router context
 const AppContent = () => {
@@ -56,6 +57,7 @@ const AppContent = () => {
             <Route path="/contact" element={<Contact />} />
             <Route path="/resume" element={<Resume />} />
             <Route path="/skills" element={<Skills />} />
+            <Route path="/algorithms" element={<Algorithms />} />
           </Routes>
         </AnimatePresence>
       </main>
