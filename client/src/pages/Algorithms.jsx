@@ -21,7 +21,7 @@ import {
   FiMessageSquare,
   FiAward
 } from 'react-icons/fi'
-import { Link } from 'react-router-dom'
+import { Link, useParams, useNavigate, useLocation } from 'react-router-dom'
 import { algorithms as algorithmsData } from '../data/algorithms'
 import Fuse from 'fuse.js'
 
@@ -33,10 +33,15 @@ const Algorithms = () => {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState(null)
   const [selectedTag, setSelectedTag] = useState('all')
   const [sortKey, setSortKey] = useState('name')
+  const [codeLang, setCodeLang] = useState('js')
+
+  const navigate = useNavigate()
+  const { slug } = useParams?.() || {}
+  const location = useLocation()
 
   // Close modal on ESC
   useEffect(() => {
-    const handler = (e) => { if (e.key === 'Escape') setSelectedAlgorithm(null) }
+    const handler = (e) => { if (e.key === 'Escape') closeModal() }
     if (selectedAlgorithm) {
       document.addEventListener('keydown', handler)
       document.body.style.overflow = 'hidden'
@@ -104,10 +109,32 @@ const Algorithms = () => {
     setSortKey('name')
   }
 
-  const AlgorithmDetailModal = ({ algorithm, onClose }) => {
+  // Sync modal with slug param
+  useEffect(() => {
+    if (slug && !selectedAlgorithm) {
+      const found = algorithms.find(a => a.slug === slug)
+      if (found) setSelectedAlgorithm(found)
+    }
+    if (!slug && selectedAlgorithm) setSelectedAlgorithm(null)
+  }, [slug, selectedAlgorithm, algorithms])
+
+  // Push slug when open
+  useEffect(() => {
+    if (selectedAlgorithm && selectedAlgorithm.slug !== slug) {
+      navigate(`/algorithms/${selectedAlgorithm.slug}`, { replace: false })
+    }
+  }, [selectedAlgorithm])
+
+  // Close modal helper
+  const closeModal = () => navigate('/algorithms')
+
+  const AlgorithmDetailModal = ({ algorithm }) => {
+    // derive languages from explanation.codeExample possibly multi-language later
+    const codeMap = { js: algorithm.explanation?.codeExample }
+    const langs = Object.entries(codeMap).filter(([_,v]) => v)
     if (!algorithm) return null
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={closeModal}>
         <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-white dark:bg-dark-800 rounded-2xl max-w-5xl max-h-[90vh] w-full overflow-y-auto shadow-2xl" onClick={e => e.stopPropagation()}>
           <div className="sticky top-0 bg-white dark:bg-dark-800 border-b border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -117,7 +144,7 @@ const Algorithms = () => {
                 <p className="text-gray-600 dark:text-gray-400">{algorithm.topic} • {algorithm.difficulty}</p>
               </div>
             </div>
-            <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"><FiX /></button>
+            <button onClick={closeModal} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"><FiX /></button>
           </div>
           <div className="p-6 space-y-8">
             <section>
@@ -150,17 +177,38 @@ const Algorithms = () => {
                 ))}
               </div>
             </section>
-            {algorithm.explanation?.codeExample && (
+            {langs.length>0 && (
               <section>
                 <h3 className="text-xl font-semibold flex items-center space-x-2 mb-4"><FiCode className="text-indigo-500" /><span>Implementation</span></h3>
-                <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto"><pre className="text-sm text-gray-300 whitespace-pre-wrap"><code>{algorithm.explanation.codeExample}</code></pre></div>
+                <div className="flex items-center space-x-2 mb-2">
+                  {langs.map(([k]) => (
+                    <button key={k} onClick={()=>setCodeLang(k)} className={`px-3 py-1 rounded text-xs font-medium ${codeLang===k? 'bg-indigo-600 text-white':'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`}>{k.toUpperCase()}</button>
+                  ))}
+                  <button onClick={()=>navigator.clipboard.writeText(codeMap[codeLang])} className="ml-auto text-xs px-2 py-1 bg-gray-700 text-white rounded">Copy</button>
+                </div>
+                <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto"><pre className="text-sm text-gray-300 whitespace-pre-wrap"><code>{codeMap[codeLang]}</code></pre></div>
               </section>
             )}
-            <section>
-              <h3 className="text-xl font-semibold flex items-center space-x-2 mb-4"><FiCheckCircle className="text-teal-500" /><span>When to Use</span></h3>
-              <div className="bg-teal-50 dark:bg-teal-900/20 rounded-lg p-4 text-gray-700 dark:text-gray-300">{algorithm.explanation?.whenToUse}</div>
-              <div className="mt-4"><h4 className="font-semibold mb-2">Use Cases:</h4><ul className="space-y-1 text-gray-700 dark:text-gray-300">{algorithm.useCases.map((u,i)=>(<li key={i} className="flex items-center space-x-2 text-sm"><FiArrowRight className="text-teal-500" /><span>{u}</span></li>))}</ul></div>
-            </section>
+            {algorithm.explanation?.commonMistakes?.length > 0 && (
+              <section>
+                <h3 className="text-xl font-semibold flex items-center space-x-2 mb-4"><FiHelpCircle className="text-red-500" /><span>Common Mistakes</span></h3>
+                <ul className="space-y-2">{algorithm.explanation.commonMistakes.map((m,i)=>(<li key={i} className="p-3 bg-red-50 dark:bg-red-900/20 rounded text-sm text-red-700 dark:text-red-300">{m}</li>))}</ul>
+              </section>
+            )}
+            {algorithm.explanation?.interviewQuestions?.length > 0 && (
+              <section>
+                <h3 className="text-xl font-semibold flex items-center space-x-2 mb-4"><FiMessageSquare className="text-emerald-500" /><span>Interview Q&A</span></h3>
+                <div className="space-y-4">
+                  {algorithm.explanation.interviewQuestions.map((q,i)=>(
+                    <div key={i} className="p-4 rounded-lg bg-emerald-50 dark:bg-emerald-900/20">
+                      <p className="font-medium mb-1">{q.question}</p>
+                      {q.answer && <p className="text-sm text-gray-700 dark:text-gray-300 mb-1">{q.answer}</p>}
+                      {q.approach && <p className="text-xs text-gray-500 dark:text-gray-400">Approach: {q.approach}</p>}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
         </motion.div>
       </motion.div>
@@ -281,7 +329,7 @@ const Algorithms = () => {
           )}
         </section>
       </div>
-      {selectedAlgorithm && <AlgorithmDetailModal algorithm={selectedAlgorithm} onClose={() => setSelectedAlgorithm(null)} />}
+      {selectedAlgorithm && <AlgorithmDetailModal algorithm={selectedAlgorithm} />}
     </motion.div>
   )
 }
