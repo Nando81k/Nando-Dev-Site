@@ -22,6 +22,7 @@ import {
   FiAward
 } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
+import { algorithms as algorithmsData } from '../data/algorithms'
 
 const Algorithms = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -44,40 +45,7 @@ const Algorithms = () => {
   }, [selectedAlgorithm])
 
   // Algorithms dataset (moved from Skills page)
-  const algorithms = [
-    {
-      id: 'bubble-sort',
-      name: 'Bubble Sort',
-      topic: 'Sorting',
-      difficulty: 'Easy',
-      timeComplexity: 'O(n²)',
-      spaceComplexity: 'O(1)',
-      description: 'Simple comparison-based sorting algorithm that repeatedly steps through the list.',
-      keyPoints: ['In-place sorting', 'Stable algorithm', 'Poor performance for large datasets'],
-      useCases: ['Educational purposes', 'Small datasets', 'Nearly sorted data'],
-      implementations: ['JavaScript', 'Python', 'Java'],
-      explanation: {
-        howItWorks: "Bubble Sort works by repeatedly comparing adjacent elements and swapping them if they're in the wrong order. It's called 'bubble' sort because smaller elements 'bubble' to the beginning of the list.",
-        stepByStep: [
-          '1. Start at the beginning of the array',
-          '2. Compare the first two elements',
-          '3. If the first is greater than the second, swap them',
-            '4. Move to the next pair and repeat',
-            '5. Continue until you reach the end of the array',
-            '6. Repeat the entire process until no swaps are needed'
-        ],
-        visualExample: 'Array: [64, 34, 25, 12, 22, 11, 90]\nPass 1: [34, 25, 12, 22, 11, 64, 90] (64 bubbles to position)\nPass 2: [25, 12, 22, 11, 34, 64, 90] (34 bubbles to position)\n...continues until sorted',
-        codeExample: `function bubbleSort(arr) {\n  const n = arr.length;\n  for (let i = 0; i < n - 1; i++) {\n    let swapped = false;\n    for (let j = 0; j < n - i - 1; j++) {\n      if (arr[j] > arr[j + 1]) {\n        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];\n        swapped = true;\n      }\n    }\n    if (!swapped) break;\n  }\n  return arr;\n}`,
-        whyThisComplexity: 'Time: O(n²) due to nested loops. Space: O(1) extra memory.',
-        whenToUse: 'Learning / very small arrays / nearly sorted input.',
-        commonMistakes: ['Missing early break optimization'],
-        interviewQuestions: [
-          { question: 'Implement bubble sort with early exit.', difficulty: 'Easy', approach: 'Track swaps per pass.', answer: 'Use swapped flag; best case O(n).'}
-        ]
-      }
-    },
-    // (Shortened dataset for brevity – real dataset kept on original page previously)
-  ]
+  const algorithms = algorithmsData
 
   const filteredAlgorithms = useMemo(() => algorithms.filter(a => {
     const s = searchTerm.toLowerCase()
