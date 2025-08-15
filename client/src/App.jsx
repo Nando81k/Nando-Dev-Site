@@ -59,6 +59,7 @@ const AppContent = () => {
             <Route path="/resume" element={<Resume />} />
             <Route path="/skills" element={<Skills />} />
             <Route path="/algorithms" element={<Algorithms />} />
+            <Route path="/algorithms/:slug" element={<Algorithms />} />
           </Routes>
         </AnimatePresence>
       </main>
