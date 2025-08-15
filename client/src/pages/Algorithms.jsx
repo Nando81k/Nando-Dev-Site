@@ -23,6 +23,7 @@ import {
 } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
 import { algorithms as algorithmsData } from '../data/algorithms'
+import Fuse from 'fuse.js'
 
 const Algorithms = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -30,6 +31,8 @@ const Algorithms = () => {
   const [selectedTopic, setSelectedTopic] = useState('all')
   const [selectedTimeComplexity, setSelectedTimeComplexity] = useState('all')
   const [selectedAlgorithm, setSelectedAlgorithm] = useState(null)
+  const [selectedTag, setSelectedTag] = useState('all')
+  const [sortKey, setSortKey] = useState('name')
 
   // Close modal on ESC
   useEffect(() => {
@@ -46,15 +49,27 @@ const Algorithms = () => {
 
   // Algorithms dataset (moved from Skills page)
   const algorithms = algorithmsData
-
-  const filteredAlgorithms = useMemo(() => algorithms.filter(a => {
-    const s = searchTerm.toLowerCase()
-    const matchesSearch = a.name.toLowerCase().includes(s) || a.description.toLowerCase().includes(s) || a.topic.toLowerCase().includes(s)
+  const allTags = ['all', ...Array.from(new Set(algorithms.flatMap(a => a.tags || [])))]
+  const fuse = useMemo(() => new Fuse(algorithms, { keys: [ 'name', 'description', 'topic', 'tags' ], threshold: 0.38, ignoreLocation: true }), [algorithms])
+  const textSearched = useMemo(() => {
+    if (!searchTerm.trim()) return algorithms
+    return fuse.search(searchTerm).map(r => r.item)
+  }, [searchTerm, fuse, algorithms])
+  const filteredAlgorithms = useMemo(() => textSearched.filter(a => {
     const matchesDifficulty = selectedDifficulty === 'all' || a.difficulty === selectedDifficulty
     const matchesTopic = selectedTopic === 'all' || a.topic === selectedTopic
     const matchesTime = selectedTimeComplexity === 'all' || a.timeComplexity === selectedTimeComplexity
-    return matchesSearch && matchesDifficulty && matchesTopic && matchesTime
-  }), [searchTerm, selectedDifficulty, selectedTopic, selectedTimeComplexity, algorithms])
+    const matchesTag = selectedTag === 'all' || (a.tags || []).includes(selectedTag)
+    return matchesDifficulty && matchesTopic && matchesTime && matchesTag
+  }), [textSearched, selectedDifficulty, selectedTopic, selectedTimeComplexity, selectedTag])
+  const sortedAlgorithms = useMemo(() => {
+    return [...filteredAlgorithms].sort((a,b) => {
+      if (sortKey === 'name') return a.name.localeCompare(b.name)
+      if (sortKey === 'time') return (a.timeComplexity || '').localeCompare(b.timeComplexity || '')
+      if (sortKey === 'difficulty') return a.difficulty.localeCompare(b.difficulty)
+      return 0
+    })
+  }, [filteredAlgorithms, sortKey])
 
   const difficulties = ['all', ...new Set(algorithms.map(a => a.difficulty))]
   const topics = ['all', ...new Set(algorithms.map(a => a.topic))]
@@ -85,6 +100,8 @@ const Algorithms = () => {
     setSelectedDifficulty('all')
     setSelectedTopic('all')
     setSelectedTimeComplexity('all')
+    setSelectedTag('all')
+    setSortKey('name')
   }
 
   const AlgorithmDetailModal = ({ algorithm, onClose }) => {
@@ -164,31 +181,52 @@ const Algorithms = () => {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white/80 dark:bg-dark-800/80 backdrop-blur-xl rounded-2xl p-6 mb-8 border border-white/20 dark:border-gray-700/50">
             <div className="flex flex-col lg:flex-row gap-4 items-center justify-between mb-6">
               <div className="flex items-center space-x-2"><FiFilter className="text-gray-500" /><h3 className="text-lg font-semibold">Search & Filter</h3></div>
-              {(searchTerm || selectedDifficulty !== 'all' || selectedTopic !== 'all' || selectedTimeComplexity !== 'all') && (
+              {(searchTerm || selectedDifficulty !== 'all' || selectedTopic !== 'all' || selectedTimeComplexity !== 'all' || selectedTag !== 'all') && (
                 <button onClick={clearFilters} className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-sm rounded-lg">Clear Filters</button>
               )}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="relative">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="relative md:col-span-2 lg:col-span-1">
                 <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input value={searchTerm} onChange={e=>setSearchTerm(e.target.value)} placeholder="Search algorithms..." className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white" />
               </div>
-              <select value={selectedDifficulty} onChange={e=>setSelectedDifficulty(e.target.value)} className="px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500">
-                {difficulties.map(d=> <option key={d} value={d}>{d==='all'?'All Difficulties':d}</option>)}
-              </select>
-              <select value={selectedTopic} onChange={e=>setSelectedTopic(e.target.value)} className="px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500">
-                {topics.map(t=> <option key={t} value={t}>{t==='all'?'All Topics':t}</option>)}
-              </select>
-              <select value={selectedTimeComplexity} onChange={e=>setSelectedTimeComplexity(e.target.value)} className="px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500">
-                {timeComplexities.map(tc=> <option key={tc} value={tc}>{tc==='all'?'All Complexities':tc}</option>)}
-              </select>
+              <div className="relative">
+                <select value={selectedDifficulty} onChange={e=>setSelectedDifficulty(e.target.value)} className="px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500">
+                  {difficulties.map(d=> <option key={d} value={d}>{d==='all'?'All Difficulties':d}</option>)}
+                </select>
+              </div>
+              <div className="relative">
+                <select value={selectedTopic} onChange={e=>setSelectedTopic(e.target.value)} className="px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500">
+                  {topics.map(t=> <option key={t} value={t}>{t==='all'?'All Topics':t}</option>)}
+                </select>
+              </div>
+              <div className="relative">
+                <select value={selectedTimeComplexity} onChange={e=>setSelectedTimeComplexity(e.target.value)} className="px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500">
+                  {timeComplexities.map(tc=> <option key={tc} value={tc}>{tc==='all'?'All Complexities':tc}</option>)}
+                </select>
+              </div>
+              <div className="relative">
+                <select value={selectedTag} onChange={e=>setSelectedTag(e.target.value)} className="px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500">
+                  {allTags.map(tag => <option key={tag} value={tag}>{tag === 'all' ? 'All Tags' : tag}</option>)}
+                </select>
+              </div>
             </div>
-            <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">Showing {filteredAlgorithms.length} of {algorithms.length} algorithms</div>
+            <div className="mt-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div className="text-sm text-gray-600 dark:text-gray-400">Showing {sortedAlgorithms.length} of {algorithms.length} algorithms</div>
+              <div className="flex items-center space-x-2">
+                <label className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Sort By</label>
+                <select value={sortKey} onChange={e=>setSortKey(e.target.value)} className="px-3 py-2 bg-gray-50 dark:bg-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+                  <option value="name">Name (A-Z)</option>
+                  <option value="difficulty">Difficulty</option>
+                  <option value="time">Time Complexity</option>
+                </select>
+              </div>
+            </div>
           </motion.div>
 
           {/* Algorithms Grid */}
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid gap-6">
-            {filteredAlgorithms.map((algorithm, index) => (
+            {sortedAlgorithms.map((algorithm, index) => (
               <motion.div key={algorithm.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 * index }} className="group relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all" />
                 <div className="relative bg-white/90 dark:bg-dark-800/90 backdrop-blur-xl rounded-2xl p-6 border border-white/20 dark:border-gray-700/50 hover:border-blue-300 dark:hover:border-blue-600 transition-all">
@@ -233,7 +271,7 @@ const Algorithms = () => {
             ))}
           </motion.div>
 
-          {filteredAlgorithms.length === 0 && (
+          {sortedAlgorithms.length === 0 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
               <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4"><FiSearch className="text-2xl text-gray-400" /></div>
               <h3 className="text-xl font-semibold mb-2">No algorithms found</h3>
